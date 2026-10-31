@@ -78,5 +78,13 @@
     <EmbeddedResource Include="Resources\sbtool.png" />
     <EmbeddedResource Include="Resources\sbtool_16.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\find.png" />
+    <EmbeddedResource Include="Resources\find_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\about.png" />
+    <EmbeddedResource Include="Resources\about_16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

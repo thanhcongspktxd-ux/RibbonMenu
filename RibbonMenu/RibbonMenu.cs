@@ -10,12 +10,13 @@ using System.Windows.Media.Imaging;
 using AcadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 [assembly: ExtensionApplication(typeof(RibbonMenu.RibbonMenuInitializer))]
-
 namespace RibbonMenu
 {
     public class RibbonMenuInitializer : IExtensionApplication
     {
         private const string TabId = "SBTOOLS_MAIN_TAB";
+        private const string LicenseButtonId = "SBTOOLS_BTN_LICENSE"; // Đổi id cho nút About thành License
+        private const string FindButtonId = "SBTOOLS_BTN_FIND";
         private const string SbButtonId = "SBTOOLS_BTN_MANAGER";
         private const string MirrorButtonId = "SBTOOLS_BTN_MIRROR";
 
@@ -94,11 +95,97 @@ namespace RibbonMenu
                 };
 
                 // ==========================================
-                // PANEL 1 - SB TOOLS MANAGER
+                // 1. PANEL LICENSE (CHỈ CHỨA NÚT ABOUT, ĐẶT Ở GÓC TRÁI NHẤT)
+                // ==========================================
+                RibbonPanelSource sourceLicense = new RibbonPanelSource
+                {
+                    Title = "LICENSE"
+                };
+                RibbonPanel panelLicense = new RibbonPanel
+                {
+                    Source = sourceLicense
+                };
+
+                RibbonToolTip aboutToolTip = new RibbonToolTip
+                {
+                    Title = "About SBPowerCAD & License",
+                    Content = "Displays product version, release date, and copyright protection details.",
+                    ExpandedContent = "Shortcut Command: ABOUTSBTOOLS\nChecks software registration and license status.",
+                    Image = LoadImageFromResource("about.png")
+                };
+
+                RibbonButton btnAbout = new RibbonButton
+                {
+                    Id = LicenseButtonId,
+                    Text = "About",
+                    ShowText = true,
+                    ShowImage = true,
+                    Size = RibbonItemSize.Large,
+                    IsEnabled = true,
+                    CommandParameter = "ABOUTSBTOOLS ",
+                    CommandHandler = Handler,
+                    ToolTip = aboutToolTip
+                };
+
+                try
+                {
+                    btnAbout.Image = LoadImageFromResource("about_16.png");
+                    btnAbout.LargeImage = LoadImageFromResource("about.png");
+                }
+                catch { }
+
+                sourceLicense.Items.Add(btnAbout);
+                newTab.Panels.Add(panelLicense); // Thêm Panel LICENSE đầu tiên
+
+                // ==========================================
+                // 2. PANEL INFORMATION (CHỨA NÚT FIND)
+                // ==========================================
+                RibbonPanelSource sourceInfo = new RibbonPanelSource
+                {
+                    Title = "INFORMATION"
+                };
+                RibbonPanel panelInfo = new RibbonPanel
+                {
+                    Source = sourceInfo
+                };
+
+                RibbonToolTip findToolTip = new RibbonToolTip
+                {
+                    Title = "Command Finder & Smartsheet",
+                    Content = "Opens the official Smartsheet command database and feature request portal.",
+                    ExpandedContent = "Shortcut Command: SBFINDER\nAllows users to search all available commands, view update dates, and submit new feature requests.",
+                    Image = LoadImageFromResource("find.png")
+                };
+
+                RibbonButton btnFind = new RibbonButton
+                {
+                    Id = FindButtonId,
+                    Text = "FIND",
+                    ShowText = true,
+                    ShowImage = true,
+                    Size = RibbonItemSize.Large,
+                    IsEnabled = true,
+                    CommandParameter = "SBFINDER ",
+                    CommandHandler = Handler,
+                    ToolTip = findToolTip
+                };
+
+                try
+                {
+                    btnFind.Image = LoadImageFromResource("find_16.png");
+                    btnFind.LargeImage = LoadImageFromResource("find.png");
+                }
+                catch { }
+
+                sourceInfo.Items.Add(btnFind);
+                newTab.Panels.Add(panelInfo); // Thêm Panel INFORMATION thứ hai
+
+                // ==========================================
+                // 3. PANEL SBTOOL (MANAGER)
                 // ==========================================
                 RibbonPanelSource source1 = new RibbonPanelSource
                 {
-                    Title = "SB Tools Manager"
+                    Title = "SBTOOL"
                 };
                 RibbonPanel panel1 = new RibbonPanel
                 {
@@ -107,16 +194,16 @@ namespace RibbonMenu
 
                 RibbonToolTip sbToolTip = new RibbonToolTip
                 {
-                    Title = "SB Tools Manager",
+                    Title = "SBTOOL Manager",
                     Content = "Opens the central management dashboard for all SBTools drafting and automation utilities.",
                     ExpandedContent = "Shortcut Command: SBTOOL\nStreamlines layer, block, and layout management workflows.",
-                    Image = LoadImageFromResource("sbtool.png") // Thêm icon vào Tooltip
+                    Image = LoadImageFromResource("sbtool.png")
                 };
 
                 RibbonButton btnSbTool = new RibbonButton
                 {
                     Id = SbButtonId,
-                    Text = "SB Tools",
+                    Text = "Manager",
                     ShowText = true,
                     ShowImage = true,
                     Size = RibbonItemSize.Large,
@@ -126,7 +213,6 @@ namespace RibbonMenu
                     ToolTip = sbToolTip
                 };
 
-                // Nạp icon 16x16 và 32x32 cho SB Tools
                 try
                 {
                     btnSbTool.Image = LoadImageFromResource("sbtool_16.png");
@@ -138,11 +224,11 @@ namespace RibbonMenu
                 newTab.Panels.Add(panel1);
 
                 // ==========================================
-                // PANEL 2 - MIRROR BLOCK
+                // 4. PANEL MODIFY (MIRROR BLOCK)
                 // ==========================================
                 RibbonPanelSource source2 = new RibbonPanelSource
                 {
-                    Title = "Mirror Block"
+                    Title = "MODIFY"
                 };
                 RibbonPanel panel2 = new RibbonPanel
                 {
@@ -154,13 +240,13 @@ namespace RibbonMenu
                     Title = "Mirror Block (MMI)",
                     Content = "Intelligently mirrors blocks, attributes, text, and dynamic references while keeping text readable.",
                     ExpandedContent = "Shortcut Command: MMI\nAutomates block-state transformations and prevents flipped text issues.",
-                    Image = LoadImageFromResource("mirror-image.png") // Thêm icon vào Tooltip
+                    Image = LoadImageFromResource("mirror-image.png")
                 };
 
                 RibbonButton btnMirror = new RibbonButton
                 {
                     Id = MirrorButtonId,
-                    Text = "Mirror",
+                    Text = "Mirror Block",
                     ShowText = true,
                     ShowImage = true,
                     Size = RibbonItemSize.Large,
@@ -170,7 +256,6 @@ namespace RibbonMenu
                     ToolTip = mirrorToolTip
                 };
 
-                // Nạp icon 16x16 và 32x32 cho Mirror Block
                 try
                 {
                     btnMirror.Image = LoadImageFromResource("mirror_16.png");
@@ -184,7 +269,7 @@ namespace RibbonMenu
                 ribbon.Tabs.Add(newTab);
                 newTab.IsActive = true;
 
-                Log("\n[SBTools] Ribbon created successfully with Icons & Tooltips.");
+                Log("\n[SBTools] Ribbon created successfully with separate LICENSE panel.");
             }
             catch (System.Exception ex)
             {
@@ -192,7 +277,6 @@ namespace RibbonMenu
             }
         }
 
-        // Hàm nạp ảnh trực tiếp qua Stream (Bỏ qua lỗi pack URI của AutoCAD)
         private static ImageSource LoadImageFromResource(string fileName)
         {
             try
@@ -212,7 +296,7 @@ namespace RibbonMenu
                         bitmap.CacheOption = BitmapCacheOption.OnLoad;
                         bitmap.StreamSource = stream;
                         bitmap.EndInit();
-                        bitmap.Freeze(); // Tối ưu hóa render WPF
+                        bitmap.Freeze();
                         return bitmap;
                     }
                 }
